@@ -11,26 +11,38 @@ quantization_config = BitsAndBytesConfig(load_in_4bit=True,
                                          bnb_4bit_compute_dtype=torch.bfloat16)
 
 # Load the model and tokenizer
-model = AutoModelForCausalLM.from_pretrained(model_path,  
-                                             device_map="auto", 
-                                             quantization_config=quantization_config, 
+model = AutoModelForCausalLM.from_pretrained(model_path,
+                                             device_map="auto",
+                                             quantization_config=quantization_config,
                                              output_hidden_states=True)
 tokenizer = AutoTokenizer.from_pretrained(model_path)
+
 
 # Function to generate text
 def generate_text(input_text):
     # Encode the input text
     input_ids = tokenizer.encode(input_text, return_tensors="pt")
 
+    # Move input_ids to the same device as the model
+    device = next(model.parameters()).device
+    input_ids = input_ids.to(device)
+
     # Generate a sequence of tokens in response to the input text
-    output = model.generate(input_ids, max_length=50, num_return_sequences=1)
+    output = model.generate(
+        input_ids,
+        max_length=50,
+        num_return_sequences=1,
+        pad_token_id=tokenizer.eos_token_id  # Explicitly set pad_token_id
+    )
 
     # Decode the generated tokens to a readable text
     generated_text = tokenizer.decode(output[0], skip_special_tokens=True)
-    
+
     return generated_text
+
 
 # Example usage
 input_text = "The future of AI is"
 generated_text = generate_text(input_text)
-print(generated_text)
+print(f"Input: {input_text}")
+print(f"Output: {generated_text}")
