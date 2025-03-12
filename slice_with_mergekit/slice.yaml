@@ -1,10 +1,10 @@
 slices:
   - sources:
-      - model: MaziyarPanahi/calme-3.2-instruct-78b
+      - model: Qwen/Qwen2.5-72B-Instruct
         layer_range: [0, 49]
   - sources:
-      - model: MaziyarPanahi/calme-3.2-instruct-78b
-        layer_range: [61,85]
+      - model: Qwen/Qwen2.5-72B-Instruct
+        layer_range: [59,79]
             
 merge_method: passthrough
 dtype: bfloat16
